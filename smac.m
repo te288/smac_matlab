@@ -14,9 +14,10 @@ cou = 0.25;         % courant number　> 1.0 for explicit scheme
 dtd  = r/nu*(dl^2); % dt
 dta  = cou*dl/ut;
 dt   = min(dtd,dta);
+t = 0.0;
 
 %% Calculation Control
-NO = 1000;           % time step
+NO = 2000;           % time step
 NOF = 10;            % file num per time-step
 crit = 1.0e-6;      % criteria for convergence [Pa]
 
@@ -99,18 +100,22 @@ cnf = 0;  % count
 flgt = 1; % time step loop
 
 f1 = figure;
+ax = gca;
 [X,Y] = meshgrid(x/L,y/L);[~,c] = contourf(X,Y,p,100);
+plot_title = sprintf('Re:%d %4dstep %6.3f[s]  Pressure and Velocity distribution',Re,0,t);
+title(plot_title)
 set(c,'LineStyle','none');colormap('jet');
-xlim([0,1]);ylim([0,1])
-crange = [-5,5];
+xlim([0,1]); ax.XLabel.String = 'L/x[-]';
+ylim([0,1]); ax.YLabel.String = 'L/y[-]';
+crange = [-7.0e-2,3.0e-1];
 caxis(crange);
-colorbar;
-% 
+bar = colorbar;
+bar.Label.String = 'Pressure [Pa]';
+
 hold on;
-ui(N+2,:) = 0.0;
-ui(N+2,11)= ut;
-q = quiver(X,Y,ui,vi,2.5,'Color','red');
-ui(N+2,:) = ut; 
+
+q = quiver(X,Y,ui,vi,2.5,'Color','white');
+
 drawnow
 hold off;
 
@@ -119,7 +124,7 @@ for n = 0:NO
     fprintf('\tpmax:%e pmin:%e ppmax:%e\n',max(max(p)),min(min(p)),max(max(pp)));
     flgt = 0;
     % u, v calculation
-    if n == 500
+    if n == 1000
         ut = -ut;
         u(N+2,2:N+1) = ut;
         ui(N+2,2:N+1) =ut;
@@ -224,22 +229,29 @@ for n = 0:NO
                 vi(j,i) = 0.5*(v(j,i) + v(j+1,i));
             end
         end
-        
+    
+    t = t + dt;
     % Show result
     if rem(n,NOF) == 0
-        [X,Y] = meshgrid(x/L,y/L);[~,c] = contourf(X,Y,p,100);
+        [~,c] = contourf(X,Y,p,100);
+        plot_title = sprintf('Re:%d %4dstep %6.3f[s]  Pressure and Velocity distribution',Re,n,t);
+        title(plot_title)
+        
         set(c,'LineStyle','none');colormap('jet');
-        xlim([0,1]);ylim([0,1])
+        xlim([0,1]); ax.XLabel.String = 'L/x[-]';
+        ylim([0,1]); ax.YLabel.String = 'L/y[-]';
         caxis(crange);
-        colorbar;
-        % 
+        bar = colorbar;
+        bar.Label.String = 'Pressure [Pa]';
+        
         hold on;
-        ui(N+2,:) = 0.0;
-        ui(N+2,11)= ut;
-        q = quiver(X,Y,ui,vi,2.5,'Color','red');
-        ui(N+2,:) = ut; 
+        
+        q = quiver(X,Y,ui,vi,2.5,'Color','white');
         drawnow
+        
+        
         hold off;
+        
         filename = sprintf('plot%04d.png',n);
         saveas(f1,filename)
              
