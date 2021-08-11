@@ -3,7 +3,7 @@
 clear; close all; clc;
 
 %% Definition
-Re = 1000;          % Reynolds number = nu*ut/L
+Re = 10;          % Reynolds number = nu*ut/L
 N = 21;             % Number of grids [-]
 nu = 1.5e-5;        % kinetic viscosity [m^2/2]
 ut = 1.0;           % Boundary condition
@@ -17,7 +17,7 @@ dt   = min(dtd,dta);
 t = 0.0;
 
 %% Calculation Control
-NO = 2000;           % time step
+NO = 500;           % time step
 NOF = 10;            % file num per time-step
 crit = 1.0e-6;      % criteria for convergence [Pa]
 
@@ -101,22 +101,26 @@ flgt = 1; % time step loop
 
 f1 = figure;
 ax = gca;
-[X,Y] = meshgrid(x/L,y/L);[~,c] = contourf(X,Y,p,100);
-plot_title = sprintf('Re:%d %4dstep %6.3f[s]  Pressure and Velocity distribution',Re,0,t);
+[X,Y] = meshgrid(x/L,y/L);[~,c] = contourf(X,Y,p,10);
+crange = [-4, 4];
+caxis(crange);
+plot_title = sprintf('Re:%d %4dstep %7.4f[s]  Pressure and Velocity distribution',Re,0,t);
 title(plot_title)
-set(c,'LineStyle','none');colormap('jet');
+set(c,'LineStyle','none');colormap('parula');
 xlim([0,1]); ax.XLabel.String = 'L/x[-]';
 ylim([0,1]); ax.YLabel.String = 'L/y[-]';
-crange = [-7.0e-2,3.0e-1];
-caxis(crange);
+
 bar = colorbar;
 bar.Label.String = 'Pressure [Pa]';
 
 hold on;
 
-q = quiver(X,Y,ui,vi,2.5,'Color','white');
+q = quiver(X,Y,ui,vi,4.0,'Color','white');
 
 drawnow
+
+filename = sprintf('Re%dplot%04d.png',Re,0);
+saveas(f1,filename)
 hold off;
 
 
@@ -124,7 +128,7 @@ for n = 0:NO
     fprintf('\tpmax:%e pmin:%e ppmax:%e\n',max(max(p)),min(min(p)),max(max(pp)));
     flgt = 0;
     % u, v calculation
-    if n == 1000
+    if n == 250
         ut = -ut;
         u(N+2,2:N+1) = ut;
         ui(N+2,2:N+1) =ut;
@@ -233,26 +237,27 @@ for n = 0:NO
     t = t + dt;
     % Show result
     if rem(n,NOF) == 0
-        [~,c] = contourf(X,Y,p,100);
-        plot_title = sprintf('Re:%d %4dstep %6.3f[s]  Pressure and Velocity distribution',Re,n,t);
-        title(plot_title)
-        
-        set(c,'LineStyle','none');colormap('jet');
-        xlim([0,1]); ax.XLabel.String = 'L/x[-]';
-        ylim([0,1]); ax.YLabel.String = 'L/y[-]';
+        [~,c] = contourf(X,Y,p,10);
         caxis(crange);
         bar = colorbar;
+        plot_title = sprintf('Re:%d %4dstep %7.4f[s]  Pressure and Velocity distribution',Re,n,t);
+        title(plot_title)
+        
+        set(c,'LineStyle','none');colormap('parula');
+        xlim([0,1]); ax.XLabel.String = 'L/x[-]';
+        ylim([0,1]); ax.YLabel.String = 'L/y[-]';
+        
         bar.Label.String = 'Pressure [Pa]';
         
         hold on;
         
-        q = quiver(X,Y,ui,vi,2.5,'Color','white');
+        q = quiver(X,Y,ui,vi,4.0,'Color','white');
         drawnow
         
         
         hold off;
         
-        filename = sprintf('plot%04d.png',n);
+        filename = sprintf('Re%dplot%04d.png',Re,n);
         saveas(f1,filename)
              
     end
