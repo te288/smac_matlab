@@ -101,14 +101,13 @@ flgt = 1; % time step loop
 f1 = figure;
 [X,Y] = meshgrid(x/L,y/L);[~,c] = contourf(X,Y,p,100);
 set(c,'LineStyle','none');colormap('jet');
-xlim([0,1]);ylim([0,1])
-crange = [-5,5];
-caxis(crange);
-colorbar;
+xlim([-0.1,1.1]);ylim([-0.1,1.1])
+caxis([-0.4,0.4]);
+% colorbar;
 % 
 hold on;
 ui(N+2,:) = 0.0;
-ui(N+2,11)= ut;
+ui(N+2,10)= ut;
 q = quiver(X,Y,ui,vi,2.5,'Color','red');
 ui(N+2,:) = ut; 
 drawnow
@@ -116,7 +115,7 @@ hold off;
 
 
 for n = 0:NO
-    fprintf('\tpmax:%e pmin:%e ppmax:%e\n',max(max(p)),min(min(p)),max(max(pp)));
+    fprintf('\tpmax:%e ppmax:%e\n',max(max(p)),max(max(pp)));
     flgt = 0;
     % u, v calculation
     if n == 500
@@ -227,15 +226,28 @@ for n = 0:NO
         
     % Show result
     if rem(n,NOF) == 0
+%         figure(f1);
+%         [X,Y] = meshgrid(x/L,y/L);[~,c] = contourf(X,Y,p,100);
+%         set(c,'LineStyle','none');colormap('jet');        
+%         hold on;
+%         ui(N+2,:) = 0.0;
+%         ui(N+2,10)= ut;
+%         q.UData = ui; q.VData = vi;
+% %         c.ZData = p;
+%         ui(N+2,:) = ut; 
+%         drawnow; 
+%         hold off;
+
+        
         [X,Y] = meshgrid(x/L,y/L);[~,c] = contourf(X,Y,p,100);
         set(c,'LineStyle','none');colormap('jet');
-        xlim([0,1]);ylim([0,1])
-        caxis(crange);
-        colorbar;
+        xlim([-0.1,1.1]);ylim([-0.1,1.1])
+        caxis([-0.4,0.4]);
+        % colorbar;
         % 
         hold on;
         ui(N+2,:) = 0.0;
-        ui(N+2,11)= ut;
+        ui(N+2,10)= ut;
         q = quiver(X,Y,ui,vi,2.5,'Color','red');
         ui(N+2,:) = ut; 
         drawnow
